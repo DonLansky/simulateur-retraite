@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulateur de Retraite</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        .container {
+            margin-top: 20px;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        h2 {
+            margin-bottom: 20px;
+            color: #007bff;
+        }
+        .results-container {
+            margin-top: 20px;
+        }
+        .hidden {
+            display: none;
+        }
+        .banner {
+            padding: 50px 20px;
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+        }
+        .banner h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        .banner p {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+        .banner a {
+            background: #28a745;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+        }
+        .article-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .article {
+            flex: 1;
+            margin: 10px;
+            padding: 20px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .article img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+        .article h3 {
+            margin-top: 10px;
+            font-size: 1.5em;
+        }
+        .article p {
+            margin-top: 10px;
+            font-size: 1em;
+        }
+        .form-group label {
+            font-weight: bold;
+        }
+        #results p {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        #chart-container {
+            margin-top: 20px;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+        }
+        .btn-success, .btn-info, .btn-secondary {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="banner">
+    <h1>Simulateur et Calculateur de retraite gratuit</h1>
+    <p>Estimez votre pension dès maintenant ! Trouvez la réponse avec notre outil gratuit.</p>
+    <a href="#form-section" class="btn btn-success">Commencez Maintenant</a>
+</div>
+
+<div class="article-container">
+    <div class="article">
+        <img src="https://images.pexels.com/photos/907489/pexels-photo-907489.jpeg" alt="Simulateur de retraite">
+        <h3>Simulateur de retraite</h3>
+        <p>Notre simulateur de retraite gratuit vous permet d'estimer le montant de votre future pension en fonction de votre âge, de votre salaire et de votre durée de cotisation. Simple et rapide à utiliser, il vous offre une vision claire de votre avenir financier.</p>
+    </div>
+    <div class="article">
+        <img src="https://images.pexels.com/photos/5067712/pexels-photo-5067712.jpeg" alt="40 ans et poussières">
+        <h3>40 ans et poussières : Investissez dans votre avenir ! Santé, finances, bien-être : les clés pour une vie réussie.</h3>
+        <p>A 40 ans, c'est le moment idéal pour prendre les rênes de votre avenir. Découvrez comment concilier vie professionnelle, vie personnelle et projets d'avenir. De l'importance de l'épargne retraite aux bénéfices d'une alimentation équilibrée, cet article vous donnera toutes les clés pour construire une vie épanouie et sereine.</p>
+    </div>
+    <div class="article">
+        <img src="https://images.pexels.com/photos/8353776/pexels-photo-8353776.jpeg" alt="Préparez votre avenir sereinement">
+        <h3>Vous avez entre 40 et 60 ans ? Préparez votre avenir sereinement.</h3>
+        <p>Vous avez entre 40 et 60 ans ? Découvrez quand vous pourrez partir à la retraite et quel sera le montant de votre pension. Notre simulateur gratuit vous accompagne dans toutes les étapes de votre préparation.</p>
+    </div>
+</div>
+
+<div class="container" id="form-section">
+    <h2 class="text-center">Simulation retraite : quand partir et avec quel montant ?</h2>
+    <form id="retirement-form">
+        <div class="form-group">
+            <label for="gender">Vous êtes :</label><br>
+            <input type="radio" id="male" name="gender" value="male" required> Homme
+            <input type="radio" id="female" name="gender" value="female"> Femme
+        </div>
+        <div class="form-group">
+            <label for="children">Combien d'enfants avez-vous ?</label>
+            <input type="number" id="children" name="children" class="form-control" min="0" required>
+        </div>
+        <div class="form-group">
+            <label for="dob">Quelle est votre date de naissance ?</label>
+            <input type="date" id="dob" name="dob" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="start-date">Quand avez-vous commencé à travailler ?</label>
+            <input type="date" id="start-date" name="start-date" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="status">Quel est votre statut ?</label>
+            <select id="status" name="status" class="form-control" required>
+                <option value="salarié">Salarié</option>
+                <option value="indépendant">Indépendant</option>
+                <option value="fonctionnaire">Fonctionnaire</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="salary">Quelle est votre rémunération annuelle nette (€) ?</label>
+            <input type="number" id="salary" name="salary" class="form-control" min="0" required>
+        </div>
+        <div class="form-group">
+            <label>Quelle évolution de votre rémunération envisagez-vous à compter de maintenant ?</label><br>
+            <input type="radio" id="stable" name="salary-progression" value="stable" required> Stable
+            <input type="radio" id="average" name="salary-progression" value="moyenne"> Moyenne
+            <input type="radio" id="strong" name="salary-progression" value="forte"> Forte
+        </div>
+        <div class="form-group">
+            <label>Quelle a été l'évolution de votre rémunération depuis le début de votre carrière ?</label><br>
+            <input type="radio" id="stable-past" name="past-salary-progression" value="stable" required> Stable
+            <input type="radio" id="average-past" name="past-salary-progression" value="moyenne"> Moyenne
+            <input type="radio" id="strong-past" name="past-salary-progression" value="forte"> Forte
+        </div>
+        <button type="submit" class="btn btn-primary">Calculer</button>
+    </form>
+
+    <div id="results" class="results-container hidden">
+        <h3 class="text-center">Vos résultats</h3>
+        <div id="chart-container">
+            <canvas id="salary-chart"></canvas>
+        </div>
+        <p>Pension (net/mois) : <span id="pension-result"></span> €</p>
+        <p>Taux de remplacement : <span id="replacement-rate-result"></span> %</p>
+        <p>Revenu de fin de carrière (net/mois) : <span id="final-salary-result"></span> €</p>
+        <div class="text-center">
+            <button id="download-results" class="btn btn-success">Télécharger vos résultats</button>
+            <button id="contact-us" class="btn btn-info">Nous contacter</button>
+            <button id="recalculate" class="btn btn-secondary">Recommencer</button>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('retirement-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+    calculateResults();
+    document.getElementById('results').classList.remove('hidden');
+});
+
+function calculateResults() {
+    const dob = new Date(document.getElementById('dob').value);
+    const startDate = new Date(document.getElementById('start-date').value);
+    const gender = document.querySelector('input[name="gender"]:checked').value;
+    const children = parseInt(document.getElementById('children').value, 10);
+    const salary = parseFloat(document.getElementById('salary').value);
+    const salaryProgression = document.querySelector('input[name="salary-progression"]:checked').value;
+    const pastSalaryProgression = document.querySelector('input[name="past-salary-progression"]:checked').value;
+    const yearsWorked = new Date().getFullYear() - startDate.getFullYear();
+
+    const finalSalary = calculateFinalSalary(salary, salaryProgression, yearsWorked);
+    const pension = calculatePension(finalSalary, yearsWorked, gender);
+    const replacementRate = (pension / finalSalary) * 100;
+
+    document.getElementById('final-salary-result').innerText = finalSalary.toFixed(2);
+    document.getElementById('pension-result').innerText = pension.toFixed(2);
+    document.getElementById('replacement-rate-result').innerText = replacementRate.toFixed(2);
+
+    renderChart(salary, finalSalary, pension);
+}
+
+function calculateFinalSalary(salary, progression, years) {
+    let finalSalary = salary;
+    const progressionRate = progression === 'forte' ? 0.03 : progression === 'moyenne' ? 0.02 : 0.01;
+    for (let i = 0; i < years; i++) {
+        finalSalary *= (1 + progressionRate);
+    }
+    return finalSalary;
+}
+
+function calculatePension(finalSalary, yearsWorked, gender) {
+    const baseRate = gender === 'female' ? 0.5 : 0.55;
+    const bonus = Math.min((yearsWorked - 40) * 0.01, 0.2);
+    return finalSalary * (baseRate + bonus);
+}
+
+function renderChart(initialSalary, finalSalary, pension) {
+    const ctx = document.getElementById('salary-chart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Début de carrière', 'Maintenant', 'Retraite'],
+            datasets: [{
+                label: 'Salaire',
+                data: [initialSalary, finalSalary, pension],
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+document.getElementById('download-results').addEventListener('click', function() {
+    alert('Fonction de téléchargement des résultats en cours de développement.');
+});
+
+document.getElementById('contact-us').addEventListener('click', function() {
+    alert('Fonction de contact en cours de développement.');
+});
+
+document.getElementById('recalculate').addEventListener('click', function() {
+    document.getElementById('retirement-form').reset();
+    document.getElementById('results').classList.add('hidden');
+});
+</script>
+
+</body>
+</html>
