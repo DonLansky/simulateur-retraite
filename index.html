@@ -96,6 +96,8 @@
             margin-right: 10px;
         }
     </style>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6656425114744687"
+     crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -110,16 +112,19 @@
         <img src="https://images.pexels.com/photos/907489/pexels-photo-907489.jpeg" alt="Simulateur de retraite">
         <h3>Simulateur de retraite</h3>
         <p>Notre simulateur de retraite gratuit vous permet d'estimer le montant de votre future pension en fonction de votre âge, de votre salaire et de votre durée de cotisation. Simple et rapide à utiliser, il vous offre une vision claire de votre avenir financier.</p>
+        <a href="simulateur-retraite.html" class="btn btn-primary">Lire plus</a>
     </div>
     <div class="article">
         <img src="https://images.pexels.com/photos/5067712/pexels-photo-5067712.jpeg" alt="40 ans et poussières">
         <h3>40 ans et poussières : Investissez dans votre avenir ! Santé, finances, bien-être : les clés pour une vie réussie.</h3>
         <p>A 40 ans, c'est le moment idéal pour prendre les rênes de votre avenir. Découvrez comment concilier vie professionnelle, vie personnelle et projets d'avenir. De l'importance de l'épargne retraite aux bénéfices d'une alimentation équilibrée, cet article vous donnera toutes les clés pour construire une vie épanouie et sereine.</p>
+        <a href="40-ans-investir-avenir.html" class="btn btn-primary">Lire plus</a>
     </div>
     <div class="article">
         <img src="https://images.pexels.com/photos/8353776/pexels-photo-8353776.jpeg" alt="Préparez votre avenir sereinement">
         <h3>Vous avez entre 40 et 60 ans ? Préparez votre avenir sereinement.</h3>
         <p>Vous avez entre 40 et 60 ans ? Découvrez quand vous pourrez partir à la retraite et quel sera le montant de votre pension. Notre simulateur gratuit vous accompagne dans toutes les étapes de votre préparation.</p>
+        <a href="preparer-avenir-sereinement.html" class="btn btn-primary">Lire plus</a>
     </div>
 </div>
 
@@ -177,95 +182,81 @@
         </div>
         <p>Pension (net/mois) : <span id="pension-result"></span> €</p>
         <p>Taux de remplacement : <span id="replacement-rate-result"></span> %</p>
-        <p>Revenu de fin de carrière (net/mois) : <span id="final-salary-result"></span> €</p>
-        <div class="text-center">
-            <button id="download-results" class="btn btn-success">Télécharger vos résultats</button>
-            <button id="contact-us" class="btn btn-info">Nous contacter</button>
-            <button id="recalculate" class="btn btn-secondary">Recommencer</button>
-        </div>
     </div>
 </div>
 
 <script>
-document.getElementById('retirement-form').addEventListener('submit', function(event) {
-    event.preventDefault();
-    calculateResults();
-    document.getElementById('results').classList.remove('hidden');
-});
-
-function calculateResults() {
-    const dob = new Date(document.getElementById('dob').value);
-    const startDate = new Date(document.getElementById('start-date').value);
-    const gender = document.querySelector('input[name="gender"]:checked').value;
-    const children = parseInt(document.getElementById('children').value, 10);
-    const salary = parseFloat(document.getElementById('salary').value);
-    const salaryProgression = document.querySelector('input[name="salary-progression"]:checked').value;
-    const pastSalaryProgression = document.querySelector('input[name="past-salary-progression"]:checked').value;
-    const yearsWorked = new Date().getFullYear() - startDate.getFullYear();
-
-    const finalSalary = calculateFinalSalary(salary, salaryProgression, yearsWorked);
-    const pension = calculatePension(finalSalary, yearsWorked, gender);
-    const replacementRate = (pension / finalSalary) * 100;
-
-    document.getElementById('final-salary-result').innerText = finalSalary.toFixed(2);
-    document.getElementById('pension-result').innerText = pension.toFixed(2);
-    document.getElementById('replacement-rate-result').innerText = replacementRate.toFixed(2);
-
-    renderChart(salary, finalSalary, pension);
-}
-
-function calculateFinalSalary(salary, progression, years) {
-    let finalSalary = salary;
-    const progressionRate = progression === 'forte' ? 0.03 : progression === 'moyenne' ? 0.02 : 0.01;
-    for (let i = 0; i < years; i++) {
-        finalSalary *= (1 + progressionRate);
-    }
-    return finalSalary;
-}
-
-function calculatePension(finalSalary, yearsWorked, gender) {
-    const baseRate = gender === 'female' ? 0.5 : 0.55;
-    const bonus = Math.min((yearsWorked - 40) * 0.01, 0.2);
-    return finalSalary * (baseRate + bonus);
-}
-
-function renderChart(initialSalary, finalSalary, pension) {
-    const ctx = document.getElementById('salary-chart').getContext('2d');
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ['Début de carrière', 'Maintenant', 'Retraite'],
-            datasets: [{
-                label: 'Salaire',
-                data: [initialSalary, finalSalary, pension],
-                borderColor: 'rgba(75, 192, 192, 1)',
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                fill: true
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true
+    document.getElementById('retirement-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Collecting form data
+        const gender = document.querySelector('input[name="gender"]:checked').value;
+        const children = document.getElementById('children').value;
+        const dob = document.getElementById('dob').value;
+        const startDate = document.getElementById('start-date').value;
+        const status = document.getElementById('status').value;
+        const salary = document.getElementById('salary').value;
+        const salaryProgression = document.querySelector('input[name="salary-progression"]:checked').value;
+        const pastSalaryProgression = document.querySelector('input[name="past-salary-progression"]:checked').value;
+        
+        // Calculate age, years worked, and estimated retirement benefits
+        const birthDate = new Date(dob);
+        const workStartDate = new Date(startDate);
+        const currentDate = new Date();
+        const age = currentDate.getFullYear() - birthDate.getFullYear();
+        const yearsWorked = currentDate.getFullYear() - workStartDate.getFullYear();
+        const estimatedRetirementAge = 62; // Assuming retirement age is 62 for simplicity
+        const yearsUntilRetirement = estimatedRetirementAge - age;
+        
+        const pension = (salary * 0.5) * (yearsWorked / 40); // Simplified formula for pension calculation
+        const replacementRate = (pension / salary) * 100;
+        
+        // Display results
+        document.getElementById('pension-result').textContent = pension.toFixed(2);
+        document.getElementById('replacement-rate-result').textContent = replacementRate.toFixed(2);
+        document.getElementById('results').classList.remove('hidden');
+        
+        // Chart data
+        const ctx = document.getElementById('salary-chart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: Array.from({length: yearsUntilRetirement}, (_, i) => currentDate.getFullYear() + i),
+                datasets: [{
+                    label: 'Salaire estimé',
+                    data: Array.from({length: yearsUntilRetirement}, (_, i) => salary * Math.pow(1 + (0.02 * (salaryProgression === 'forte' ? 2 : salaryProgression === 'moyenne' ? 1 : 0)), i)),
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        beginAtZero: true
+                    },
+                    y: {
+                        beginAtZero: true
+                    }
                 }
             }
-        }
+        });
     });
-}
+</script>
 
-document.getElementById('download-results').addEventListener('click', function() {
-    alert('Fonction de téléchargement des résultats en cours de développement.');
-});
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-document.getElementById('contact-us').addEventListener('click', function() {
-    alert('Fonction de contact en cours de développement.');
-});
-
-document.getElementById('recalculate').addEventListener('click', function() {
-    document.getElementById('retirement-form').reset();
-    document.getElementById('results').classList.add('hidden');
-});
+<!-- Google AdSense -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6656425114744687"
+     data-ad-slot="5237064249"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
 </script>
 
 </body>
